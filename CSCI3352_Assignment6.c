@@ -68,13 +68,13 @@ int main()
 			{
 				sleep(3);
 				write(childFd[WRITE], "I am doing alright mom.\0", 23);
-			}
+			} // end for
 			sleep(1);
 			read(parentFd[READ], childBuf, sizeof(childBuf));
 			printf("Child recieved: %s\n", childBuf);			
 			// clear the buffer
 			memset(childBuf, 0, sizeof(childBuf));
-		}
+		} // end for
 		
 		sleep(5);
 		read(parentFd[READ], childBuf, sizeof(childBuf));
@@ -134,8 +134,7 @@ int main()
 		// close read connection from child.
 		close(childFd[READ]);
 	} // end if
-	
+
 	printf("Finished...\n");
 	return 0;
 } // end main
-
