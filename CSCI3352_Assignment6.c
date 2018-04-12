@@ -10,10 +10,14 @@
 #include <stdio.h> 	// for printf
 #include <unistd.h>	// for fork & pipe stuff.
 #include <sys/wait.h> // for wait
-#include <math.h> // to round the count
+#include <string.h> /* for memset */
 
 #define READ 0
 #define WRITE 1
+
+void sig_handler(int signum) {
+	
+}
 
 int main()
 {
@@ -24,6 +28,8 @@ int main()
 	// process has a copy of it after the fork.
 	int parentFd[2];
 	int childFd[2];
+
+	signal(SIGUSR1, sig_handler);
 
 	if (pipe(childFd) == -1)
 	{
@@ -71,16 +77,25 @@ int main()
 			sleep(1);
 			read(parentFd[READ], childBuf, sizeof(childBuf));
 			printf("Child recieved: %s\n", childBuf);			
-			
+			// clear the buffer
+			memset(childBuf, 0, sizeof(childBuf));
 		}
+		
 		sleep(5);
+		read(parentFd[READ], childBuf, sizeof(childBuf));
+		printf("Child recieved: %s\n", childBuf);
+		memset(childBuf, 0, sizeof(childBuf));
 		write(childFd[WRITE], "I am coming mom.\0", 16);
 		
 		read(parentFd[READ], childBuf, sizeof(childBuf));
 		printf("Child recieved: %s\n", childBuf);
-		
-		close(childFd[WRITE]);
+		memset(childBuf, 0, sizeof(childBuf));		
 
+		sleep(5);		
+		// close write connections
+		close(childFd[WRITE]);
+		sleep(1);
+		close(parentFd[READ]);
 	} else {
 		printf("Mother is now doing shopping...\n");
 
@@ -97,19 +112,30 @@ int main()
 				sleep(3);
 				read(childFd[READ], parentBuf, sizeof(parentBuf));
 				printf("Mom recieved: %s\n", parentBuf);
+				// clear buf
+				memset(parentBuf, 0, sizeof(parentBuf));
 			}// end for
+			
 			sleep(1);
 			write(parentFd[WRITE], "Are you doing alright?\0", 22);
 		}// end for
+		
 		sleep(5);
-		printf("55 second simulation completing... mom sends a message\n");
-		write(parentFd[WRITE], "Ok I am done in 5 seconds.\0", 26);
+		printf("55 second simulation completing... mom sends a message.\n");
+		write(parentFd[WRITE], "Ok I am done in 5 seconds, now come to the main door...\0", 55);
+		
+		sleep(5);
 		read(childFd[READ], parentBuf, sizeof(parentBuf));
 		printf("Mom recieved: %s\n", parentBuf);
+		// clear buf
+		memset(parentBuf, 0, sizeof(parentBuf));
+		
 		sleep(5);
-		printf("I am waiting.... come on...\n");
+		write(parentFd[WRITE], "I am waiting.... come on...\0", 27);
+		// close write connections
 		close(parentFd[WRITE]);
-
+		sleep(1);
+		close(childFd[READ]);
 	} // end if
 } // end main
 
