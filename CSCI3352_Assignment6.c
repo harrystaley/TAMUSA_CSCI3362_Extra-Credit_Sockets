@@ -55,7 +55,7 @@ int main()
 	if (pid == 0)
 	{
 		printf("Child process with id = %d is created\n", pid);
-		printf("Child is on his own... possibly in toys...\n");
+		printf("Child is on his own... possibly in toys...\n\n");
 
 		close(parentFd[WRITE]); // closes the write end of the parent pipe
 		close(childFd[READ]); // closes the read end of the child pipe
@@ -92,9 +92,10 @@ int main()
 		memset(childBuf, 0, sizeof(childBuf));		
 
 		sleep(5);		
-		// close write connections
+		// close write connection to parent
 		close(childFd[WRITE]);
 		sleep(1);
+		// close read connection from parent
 		close(parentFd[READ]);
 	} else {
 		printf("Mother is now doing shopping...\n");
@@ -121,7 +122,7 @@ int main()
 		}// end for
 		
 		sleep(5);
-		printf("55 second simulation completing... mom sends a message.\n");
+		printf("\n55 second simulation completing... mom sends a message.\n");
 		write(parentFd[WRITE], "Ok I am done in 5 seconds, now come to the main door...\0", 55);
 		
 		sleep(5);
@@ -132,9 +133,10 @@ int main()
 		
 		sleep(5);
 		write(parentFd[WRITE], "I am waiting.... come on...\0", 27);
-		// close write connections
+		// close write connection to child.
 		close(parentFd[WRITE]);
 		sleep(1);
+		// close read connection from child.
 		close(childFd[READ]);
 	} // end if
 } // end main
