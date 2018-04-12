@@ -39,6 +39,10 @@ int main()
 
 	// Create child process.
 	int pid = fork();
+	if (pid < 0) { /* error occurred */
+		fprintf(stderr, "Fork Failed");
+		return 1;
+	}
 
 	// fork returns pid of child process in parent
 	// and 0 in the child.
@@ -47,7 +51,7 @@ int main()
 		printf("Child process with id = %d is created\n", pid);
 		printf("Child is on his own... possibly in toys...\n");
 
-		close(parentFd[WRITE]); // closes the wrote end of the parent pipe
+		close(parentFd[WRITE]); // closes the write end of the parent pipe
 		close(childFd[READ]); // closes the read end of the child pipe
 
 		// The child will read from the pipe. So close the
@@ -62,15 +66,19 @@ int main()
 			for ( j = 0; j < 3; j++)
 			{
 				sleep(3);
-				write(childFd[WRITE], "I am doing alright mom.\n\0", 24);
+				write(childFd[WRITE], "I am doing alright mom.\0", 23);
 			}
+			sleep(1);
 			read(parentFd[READ], childBuf, sizeof(childBuf));
-			printf("Child recieved: %s", childBuf);			
+			printf("Child recieved: %s\n", childBuf);			
+			
 		}
 		sleep(5);
-		write(childFd[WRITE], "I am coming mom.\n\0", 17);
+		write(childFd[WRITE], "I am coming mom.\0", 16);
+		
 		read(parentFd[READ], childBuf, sizeof(childBuf));
-		printf("Child recieved: %s", childBuf);
+		printf("Child recieved: %s\n", childBuf);
+		
 		close(childFd[WRITE]);
 
 	} else {
@@ -83,14 +91,21 @@ int main()
 		int i;
 		for ( i = 0; i < 5; i++)
 		{
-			sleep(10);
-			read(childFd[READ], parentBuf, sizeof(parentBuf));
-			printf("Mom recieved: %s", parentBuf);
-			write(parentFd[WRITE], "Are you doing alright?\n\0", 23);
-		}
+			int j;
+			for ( j = 0; j < 3; j++)
+			{
+				sleep(3);
+				read(childFd[READ], parentBuf, sizeof(parentBuf));
+				printf("Mom recieved: %s\n", parentBuf);
+			}// end for
+			sleep(1);
+			write(parentFd[WRITE], "Are you doing alright?\0", 22);
+		}// end for
 		sleep(5);
 		printf("55 second simulation completing... mom sends a message\n");
-		write(parentFd[WRITE], "Ok I am done in 5 seconds.\n\0", 27);
+		write(parentFd[WRITE], "Ok I am done in 5 seconds.\0", 26);
+		read(childFd[READ], parentBuf, sizeof(parentBuf));
+		printf("Mom recieved: %s\n", parentBuf);
 		sleep(5);
 		printf("I am waiting.... come on...\n");
 		close(parentFd[WRITE]);
