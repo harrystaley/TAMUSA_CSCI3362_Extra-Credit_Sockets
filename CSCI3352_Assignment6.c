@@ -20,13 +20,11 @@ int main()
 {
 
 	printf("start...\n");
-	printf("Mother and child enter a grocery store...\n");
+	printf("Mother and child enter a grocery store...\n\n");
 	// Create the pipe before the fork so that the child
 	// process has a copy of it after the fork.
 	int parentFd[2];
 	int childFd[2];
-
-	signal(SIGUSR1, sig_handler);
 
 	if (pipe(childFd) == -1)
 	{
@@ -136,5 +134,8 @@ int main()
 		// close read connection from child.
 		close(childFd[READ]);
 	} // end if
+	
+	printf("Finished...\n");
+	return 0;
 } // end main
 
