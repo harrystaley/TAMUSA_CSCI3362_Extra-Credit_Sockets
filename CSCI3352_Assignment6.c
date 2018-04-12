@@ -1,8 +1,11 @@
 /*******************************************************************************
- * Program    : CSCI3352_Assignment5.c
- * Author     : Harry Staley
- * Date       : 03/28/2018
- * Description: Assignment 6 of Systems Programming
+	Program    : CSCI3352_Assignment5.c
+	Author     : Harry Staley
+	Date       : 04/12/2018
+	Description: Assignment 6 of Systems Programming:
+ 				This program demonstrates the capabilities of inter process
+ 				communicaiton through a full duplex unnamed pipe (two pipes)
+ 				between processes.
  ******************************************************************************/
 
 // Starter code from Ch 10 Slide 37
