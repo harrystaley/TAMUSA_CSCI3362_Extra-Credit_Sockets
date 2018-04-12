@@ -12,8 +12,8 @@
 #include <sys/wait.h> // for wait
 #include <math.h> // to round the count
 
-#define READ_END 0
-#define WRITE_END 1
+#define READ 0
+#define WRITE 1
 
 int main()
 {
@@ -22,16 +22,16 @@ int main()
 	printf("Mother and child enter a grocery store...\n");
 	// Create the pipe before the fork so that the child
 	// process has a copy of it after the fork.
-	int parentSendFd[2];
-	int childSendFd[2];
+	int parentFd[2];
+	int childFd[2];
 
-	if (pipe(childSendFd) == -1)
+	if (pipe(childFd) == -1)
 	{
 		printf("childSendFd Pipe creation failed\n");
 		return -1;
 	} // end if
 	
-	if (pipe(parentSendFd) == -1)
+	if (pipe(parentFd) == -1)
 	{
 		printf("parentSendFd Pipe creation failed\n");
 		return -1;
@@ -47,57 +47,53 @@ int main()
 		printf("Child process with id = %d is created\n", pid);
 		printf("Child is on his own... possibly in toys...\n");
 
-		close(parentSendFd[WRITE_END]); // closes the wrote end of the parent pipe
-		close(childSendFd[READ_END]); // closes the read end of the child pipe
+		close(parentFd[WRITE]); // closes the wrote end of the parent pipe
+		close(childFd[READ]); // closes the read end of the child pipe
 
 		// The child will read from the pipe. So close the
 		// write end of the pipe and begin reading until the
 		// parent closes the pipe.
-		int j;
-		for ( j = 0; j < 15; ++j)
-		{
-			//sleep(3);
-			write(childSendFd[WRITE_END], "Mom recieved: I am doing alright.\n\0", 30);
-		}
-		//sleep(5);
-		write(childSendFd[WRITE_END], "Mom recieved: I am coming mom.\n\0", 30);
-		close(childSendFd[WRITE_END]);
-	
-		char childBuf[1];
-		while(read(parentSendFd[READ_END], childBuf, 1) != 0)
-		{
-			printf("%s", childBuf);
-		} // end while
-		close(parentSendFd[READ_END]);
 
-	}  
-	
-	if (pid != 0)
-	{
+		char childBuf[100];		
+		int i;
+		for ( i = 0; i < 5; i++)
+		{	
+			int j; 
+			for ( j = 0; j < 3; j++)
+			{
+				sleep(3);
+				write(childFd[WRITE], "I am doing alright mom.\n\0", 24);
+			}
+			read(parentFd[READ], childBuf, sizeof(childBuf));
+			printf("Child recieved: %s", childBuf);			
+		}
+		sleep(5);
+		write(childFd[WRITE], "I am coming mom.\n\0", 17);
+		read(parentFd[READ], childBuf, sizeof(childBuf));
+		printf("Child recieved: %s", childBuf);
+		close(childFd[WRITE]);
+
+	} else {
 		printf("Mother is now doing shopping...\n");
 
-		close(childSendFd[WRITE_END]); // closes the read end of the parent pipe
-		close(parentSendFd[READ_END]); // closes the read end of the child pipe
+		close(childFd[WRITE]); // closes the read end of the parent pipe
+		close(parentFd[READ]); // closes the read end of the child pipe
 
+		char parentBuf[100];
 		int i;
-		for ( i = 0; i < 5; ++i)
+		for ( i = 0; i < 5; i++)
 		{
-			//sleep(10);
-			write(parentSendFd[WRITE_END], "Child recieved: Are you doing alright?\n\0", 39);
+			sleep(10);
+			read(childFd[READ], parentBuf, sizeof(parentBuf));
+			printf("Mom recieved: %s", parentBuf);
+			write(parentFd[WRITE], "Are you doing alright?\n\0", 23);
 		}
-		//sleep(5);
+		sleep(5);
 		printf("55 second simulation completing... mom sends a message\n");
-		write(parentSendFd[WRITE_END], "Child recieved: Ok I am done if 5 seconds.\n\0", 43);
-		//sleep(5);
+		write(parentFd[WRITE], "Ok I am done in 5 seconds.\n\0", 27);
+		sleep(5);
 		printf("I am waiting.... come on...\n");
-		close(parentSendFd[WRITE_END]);
-
-		char parentBuf[1];
-		while(read(childSendFd[READ_END], parentBuf, 1) != 0)
-		{
-			printf("%s", parentBuf);
-		} // end while
-		close(childSendFd[READ_END]); // closes the read end of the pipe
+		close(parentFd[WRITE]);
 
 	} // end if
 } // end main
