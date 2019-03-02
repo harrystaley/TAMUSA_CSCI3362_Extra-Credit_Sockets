@@ -1,14 +1,13 @@
 /*******************************************************************************
-	Program    : CSCI3352_Assignment5.c
+	Program    : Pipe_Demonstration.c
 	Author     : Harry Staley
-	Date       : 04/12/2018
-	Description: Assignment 6 of Systems Programming:
- 				This program demonstrates the capabilities of inter process
- 				communicaiton through a full duplex unnamed pipe (two pipes)
+	Date       : 03/2/2019
+	Description: This program demonstrates the capabilities of inter process
+ 				communicaiton (IPC) through a full duplex unnamed pipe (two pipes)
  				between processes.
  ******************************************************************************/
 
-// Starter code from Ch 10 Slide 37
+// Starter code taken from https://www.geeksforgeeks.org/c-program-demonstrate-fork-and-pipe/
 
 #include <stdio.h> 	// for printf
 #include <unistd.h>	// for fork & pipe stuff.
@@ -22,8 +21,8 @@
 int main()
 {
 
-	printf("start...\n");
-	printf("Mother and child enter a grocery store...\n\n");
+	printf("starting IPC...\n");
+	printf("Parent and child start doing chores...\n\n");
 	// Create the pipe before the fork so that the child
 	// process has a copy of it after the fork.
 	int parentFd[2];
@@ -53,7 +52,7 @@ int main()
 	if (pid == 0)
 	{
 		printf("Child process with id = %d is created\n", pid);
-		printf("Child is on his own... possibly in toys...\n\n");
+		printf("Child is doing the dishes... We hope...\n\n");
 
 		close(parentFd[WRITE]); // closes the write end of the parent pipe
 		close(childFd[READ]); // closes the read end of the child pipe
@@ -70,23 +69,23 @@ int main()
 			for ( j = 0; j < 3; j++)
 			{
 				sleep(3);
-				write(childFd[WRITE], "I am doing alright mom.\0", 23);
+				write(childFd[WRITE], "I am doing the dishes.\0", 23);
 			} // end for
 			sleep(1);
 			read(parentFd[READ], childBuf, sizeof(childBuf));
-			printf("Child recieved: %s\n", childBuf);			
+			printf("Child heard: %s\n", childBuf);
 			// clear the buffer
 			memset(childBuf, 0, sizeof(childBuf));
 		} // end for
 		
 		sleep(5);
 		read(parentFd[READ], childBuf, sizeof(childBuf));
-		printf("Child recieved: %s\n", childBuf);
+		printf("Child heard: %s\n", childBuf);
 		memset(childBuf, 0, sizeof(childBuf));
-		write(childFd[WRITE], "I am coming mom.\0", 16);
+		write(childFd[WRITE], "I am finishing the dishes.\0", 26);
 		
 		read(parentFd[READ], childBuf, sizeof(childBuf));
-		printf("Child recieved: %s\n", childBuf);
+		printf("Child heard: %s\n", childBuf);
 		memset(childBuf, 0, sizeof(childBuf));		
 
 		sleep(5);		
@@ -96,7 +95,7 @@ int main()
 		// close read connection from parent
 		close(parentFd[READ]);
 	} else {
-		printf("Mother is now doing shopping...\n");
+		printf("Parent is running the vacum cleaner...\n");
 
 		close(childFd[WRITE]); // closes the read end of the parent pipe
 		close(parentFd[READ]); // closes the read end of the child pipe
@@ -110,7 +109,7 @@ int main()
 			{
 				sleep(3);
 				read(childFd[READ], parentBuf, sizeof(parentBuf));
-				printf("Mom recieved: %s\n", parentBuf);
+				printf("Parent heard: %s\n", parentBuf);
 				// clear buf
 				memset(parentBuf, 0, sizeof(parentBuf));
 			}// end for
@@ -120,17 +119,17 @@ int main()
 		}// end for
 		
 		sleep(5);
-		printf("\n55 second simulation completing... mom sends a message.\n");
-		write(parentFd[WRITE], "Ok I am done in 5 seconds, now come to the main door...\0", 55);
+		printf("\n55 second simulation ending... Parent calls out.\n");
+		write(parentFd[WRITE], "Ok I am done in 5 seconds, you had better be done with the dishes...\0", 68);
 		
 		sleep(5);
 		read(childFd[READ], parentBuf, sizeof(parentBuf));
-		printf("Mom recieved: %s\n", parentBuf);
+		printf("Parent heard: %s\n", parentBuf);
 		// clear buf
 		memset(parentBuf, 0, sizeof(parentBuf));
 		
 		sleep(5);
-		write(parentFd[WRITE], "I am waiting.... come on...\0", 27);
+		write(parentFd[WRITE], "I am waiting.... Are you finished yet?\0", 38);
 		// close write connection to child.
 		close(parentFd[WRITE]);
 		sleep(1);
@@ -138,6 +137,6 @@ int main()
 		close(childFd[READ]);
 	} // end if
 
-	printf("Finished...\n");
+	printf("IPC Finished...\n");
 	return 0;
 } // end main
