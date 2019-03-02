@@ -12,11 +12,18 @@
 #include <stdio.h> 	// for printf
 #include <unistd.h>	// for fork & pipe stuff.
 #include <sys/wait.h> // for wait
-#include <string.h> /* for memset */
+#include <string.h> // for memset
 
-#define READ 0
-#define WRITE 1
+#define READ 0 // identifies the read end of a pipe.
+#define WRITE 1 // identifies the write end of a pipe.
 
+/*
+ FULL DUPLEX PIPE
+
+ |PARENT END|            |CHILD END|
+ READ END    0 ========= 1 WRITE END
+ WRITE END   1 ========= 0 READ END
+*/
 
 int main()
 {
@@ -25,27 +32,29 @@ int main()
 	printf("Parent and child start doing chores...\n\n");
 	// Create the pipe before the fork so that the child
 	// process has a copy of it after the fork.
-	int parentFd[2];
-	int childFd[2];
+
+	int parentFd[2]; // Stores read and write ends of parent pipe.
+	int childFd[2]; // Stores read and write ends of child pipe.
 
 	if (pipe(childFd) == -1)
-	{
-		printf("childSendFd Pipe creation failed\n");
+	{// Error creating child pipe.
+		printf("childFd Pipe creation failed\n");
 		return -1;
 	} // end if
 	
 	if (pipe(parentFd) == -1)
-	{
-		printf("parentSendFd Pipe creation failed\n");
+	{// Error creating parent pipe.
+		printf("parentFd Pipe creation failed\n");
 		return -1;
 	} // end if
 
 	// Create child process.
 	int pid = fork();
-	if (pid < 0) { /* error occurred */
+	if (pid < 0)
+	{ // error forking parent process
 		fprintf(stderr, "Fork Failed");
 		return 1;
-	}
+	}// end if
 
 	// fork returns pid of child process in parent
 	// and 0 in the child.
@@ -57,9 +66,9 @@ int main()
 		close(parentFd[WRITE]); // closes the write end of the parent pipe
 		close(childFd[READ]); // closes the read end of the child pipe
 
-		// The child will read from the pipe. So close the
+		// The child will read from the parent pipe. So close the
 		// write end of the pipe and begin reading until the
-		// parent closes the pipe.
+		// parent closes the pipe and thus will write to the child pipe.
 
 		char childBuf[100];		
 		int i;
@@ -130,10 +139,10 @@ int main()
 		
 		sleep(5);
 		write(parentFd[WRITE], "I am waiting.... Are you finished yet?\0", 38);
-		// close write connection to child.
+		// close write connection for parent.
 		close(parentFd[WRITE]);
 		sleep(1);
-		// close read connection from child.
+		// close read connection for child.
 		close(childFd[READ]);
 	} // end if
 
