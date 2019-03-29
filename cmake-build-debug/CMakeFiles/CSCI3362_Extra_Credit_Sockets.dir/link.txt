@@ -1,0 +1,1 @@
+/Library/Developer/CommandLineTools/usr/bin/cc -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names  CMakeFiles/CSCI3362_Extra_Credit_Sockets.dir/Client.c.o CMakeFiles/CSCI3362_Extra_Credit_Sockets.dir/Server.c.o  -o CSCI3362_Extra_Credit_Sockets 

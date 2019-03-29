@@ -1,0 +1,42 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/harrystaley/Documents/Git/College_Homework/CSCI3362_Operating_Systems/CSCI3362_Extra-Credit_Sockets/Client.c
+unistd.h
+-
+stdio.h
+-
+sys/socket.h
+-
+stdlib.h
+-
+netinet/in.h
+-
+string.h
+-
+arpa/inet.h
+-
+time.h
+-
+
+/Users/harrystaley/Documents/Git/College_Homework/CSCI3362_Operating_Systems/CSCI3362_Extra-Credit_Sockets/Server.c
+unistd.h
+-
+stdio.h
+-
+sys/socket.h
+-
+stdlib.h
+-
+netinet/in.h
+-
+string.h
+-
+time.h
+-
+
