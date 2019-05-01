@@ -149,8 +149,7 @@ int main(int argc, char const *argv[])
      * Then creates a new connected socket, and returns a new file descriptor referring to that socket.
     */
 
-     if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0)
-    {
+     if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0) {
         perror("SERVER ERROR: accept");
         exit(EXIT_FAILURE);
     }// end if connSocketFd
@@ -158,23 +157,29 @@ int main(int argc, char const *argv[])
     //printf("SERVER: Connection Accepted\n");
 
     // CONNECTION ESTABLISHED W. CLIENT!!!!!
-
-    while(strcmp(serverMsg, "END") != 0 && strcmp(buf, "END") != 0) {
-        recv( socketFd , buf, 1024, 0);
-        printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
+    // Keep listening and transmitting while the client is connected.
+    while(1) {
+        ssize_t r = recv(socketFd , buf, 1024, 0);
+        if (r == 0 || strcmp(buf, "EXIT") == 0) { // peer disconnected
+            printf("%.24s SERVER MESG: Client disconnected.", ctime(&ticks));
+            break;
+        } else if (r == -1) { // error
+            printf("%.24s SERVER ERROR: Socket Read.", ctime(&ticks));
+            break;
+        } else {
+            printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
+        }// end if r == 0
         printf(">>>>>>>>>>>: ");
         fgets(serverMsg, 100, stdin);
         send(socketFd, serverMsg, strlen(serverMsg), 0);
         printf("%.24s SERVER SENT: %s", ctime(&ticks), serverMsg);
-        if ()
-            break;
-    }// end while loop
+    }// end while true.
 
     printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
     sleep(1); // Wait before closing the file descriptors.
-    close(socketFd);
+    close(socketFd); // close the socket.
     sleep(1);
-    close(connSocketFd);
+    close(connSocketFd); // Close the connection socket.
 
     return 0;
 }// end method main
