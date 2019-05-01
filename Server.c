@@ -31,7 +31,7 @@ int main(int argc, char const *argv[])
     int optEnabled = 1;
     int addressLen = sizeof(sockAddrIn);
     char buf[1024] = {0};
-    char *serverMsg;
+    char *serverMsg = NULL;
     time_t ticks = time(NULL);
 
     if (argc < 1) {
@@ -159,13 +159,18 @@ int main(int argc, char const *argv[])
 
     // CONNECTION ESTABLISHED W. CLIENT!!!!!
 
-    recv( connSocketFd , buf, 1024, 0);
-    printf("%.24s SERVER: %s\n", ctime(&ticks),buf );
+    while(strcmp(serverMsg, "END") != 0 && strcmp(buf, "END") != 0) {
+        recv( socketFd , buf, 1024, 0);
+        printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
+        printf(">>>>>>>>>>>: ");
+        fgets(serverMsg, 100, stdin);
+        send(socketFd, serverMsg, strlen(serverMsg), 0);
+        printf("%.24s SERVER SENT: %s", ctime(&ticks), serverMsg);
+        if ()
+            break;
+    }// end while loop
 
-    serverMsg = "Hello from server";
-    send(connSocketFd , serverMsg , strlen(serverMsg) , 0 );
-    printf("%.24s SERVER: Hello message sent\n", ctime(&ticks));
-
+    printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
     sleep(1); // Wait before closing the file descriptors.
     close(socketFd);
     sleep(1);

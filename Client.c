@@ -26,8 +26,8 @@ int main(int argc, char const *argv[])
     char * char_sock_addr; // Defines the socket address that the user defined in teh argument.
     int socketFd = 0; // socket file descriptor
     struct sockaddr_in serverAddr;
-    char *clientMsg;
     char buf[1024] = {0};
+    char *clientMsg = NULL;
     time_t ticks = time(NULL);
 
     // checks to see if the user provided an argument to parse.
@@ -107,17 +107,20 @@ int main(int argc, char const *argv[])
         printf("CLIENT ERROR: Connection Failed\n");
         return -1;
     }// end if connect
-    printf("%.24s CLIENT: connected to %s:%li\n", ctime(&ticks), ip_address_c, port);
+    printf("%.24s CLIENT MESG: connected to %s:%li\n", ctime(&ticks), ip_address_c, port);
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
-    clientMsg = "Hello from client";
-    send(socketFd , clientMsg , strlen(clientMsg) , 0 );
-    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks));
+    while(strcmp(clientMsg, "END") != 0 && strcmp(buf, "END") != 0) {        char *clientMsg = NULL;
+        printf(">>>>>>>>>>>: ");
+        fgets(clientMsg, 100, stdin);
+        send(socketFd, clientMsg, strlen(clientMsg), 0);
+        printf("%.24s CLIENT SENT: %s", ctime(&ticks), clientMsg);
+        recv( socketFd , buf, 1024, 0);
+        printf("%.24s CLIENT RECV: %s\n", ctime(&ticks),buf );
+    }// end while loop
 
-    recv( socketFd , buf, 1024, 0);
-    printf("%.24s CLIENT: %s\n", ctime(&ticks),buf );
-
+    printf("%.24s CLIENT MESG: Please wait chat client closing.\n", ctime(&ticks));
     sleep(2); // Wait before closing the file descriptor.
     close(socketFd);
 
