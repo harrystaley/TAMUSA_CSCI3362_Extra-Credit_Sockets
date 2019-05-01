@@ -30,8 +30,9 @@ int main(int argc, char const *argv[])
     char buf[1024] = {0};
     time_t ticks = time(NULL);
 
+    printf("arguments: %s\n", argv[1]);
     // checks to see if the user provided an argument to parse.
-    if (argc != 1) {
+    if (argc < 1) {
         fprintf(stderr,"CLIENT ERROR, Please provide your address in the following format: command ip_address:port\n ex: client 127.0.0.1:80\n");
         exit(1);
     } else {
