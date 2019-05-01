@@ -105,13 +105,13 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed\n");
         return -1;
     }// end if connect
-    printf("%.24s CLIENT: connected to %s:%i\n", ctime(&ticks), ip_address, port);
+    printf("%.24s CLIENT: connected to %s:%s\n", ctime(&ticks), ip_address_c, port_c);
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
     clientMsg = "Hello from client";
     send(socketFd , clientMsg , strlen(clientMsg) , 0 );
-    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks));
+    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks), ip_address_c, port_c);
 
     recv( socketFd , buf, 1024, 0);
     printf("%.24s CLIENT: %s\n", ctime(&ticks),buf );

@@ -105,7 +105,7 @@ int main(int argc, char const *argv[])
             printf("The port number provided was out of range and must be between 0 and 65535\n");
         }// if port < 0 || port > 65535
     }
-    sockAddrIn.sin_port = htons( port );
+    sockAddrIn.sin_port = htons(port);
 
     //printf("SERVER: Socket Options Set\n");
 
@@ -138,7 +138,7 @@ int main(int argc, char const *argv[])
         perror("listen failed");
         exit(EXIT_FAILURE);
     }// end if listen
-    printf("\n%.24s SERVER: Listening on port: %i\n", ctime(&ticks), PORT);
+    printf("\n%.24s SERVER: Listening on ip: %s port: %s\n", ctime(&ticks),ip_address_c, port_c);
 
 
     /*
@@ -169,7 +169,6 @@ int main(int argc, char const *argv[])
     close(socketFd);
     sleep(1);
     close(connSocketFd);
-
-
+    
     return 0;
 }// end method main
