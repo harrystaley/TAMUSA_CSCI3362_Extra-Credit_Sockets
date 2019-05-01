@@ -98,10 +98,12 @@ int main(int argc, char const *argv[])
         /* If the value provided was out of range, display a warning message */
         if (errno == ERANGE) {
             printf("SERVER ERROR: The value provided was out of range\n");
+            exit(0);
         } // end if errorno == ERANGE
         // check to see if the port is out of the range of acceptable ports.
         if (port < 0 || port > 65535) {
             printf("SERVER ERROR: The port number provided was out of range and must be between 0 and 65535\n");
+            exit(0);
         }// if port < 0 || port > 65535
     }
     sockAddrIn.sin_port = htons(port);
@@ -137,7 +139,7 @@ int main(int argc, char const *argv[])
         perror("SERVER ERROR: listen failed");
         exit(EXIT_FAILURE);
     }// end if listen
-    printf("\n%.24s SERVER: Listening on ip: %s port: %s\n", ctime(&ticks),ip_address_c, port_c);
+    printf("\n%.24s SERVER: Listening on ip: %s port: %li\n", ctime(&ticks),ip_address_c, port);
 
 
     /*

@@ -84,10 +84,12 @@ int main(int argc, char const *argv[])
         /* If the value provided was out of range, display a warning message */
         if (errno == ERANGE) {
             printf("CLIENT ERROR: The value provided was out of range\n");
+            exit(0);
         } // end if errorno == ERANGE
         // check to see if the port is out of the range of acceptable ports.
         if (port < 0 || port > 65535) {
             printf("CLIENT ERROR: The port number provided was out of range and must be between 0 and 65535\n");
+            exit(0);
         }// if port < 0 || port > 65535
     }
     serverAddr.sin_port = htons(port);
@@ -105,7 +107,7 @@ int main(int argc, char const *argv[])
         printf("CLIENT ERROR: Connection Failed\n");
         return -1;
     }// end if connect
-    printf("%.24s CLIENT: connected to %s:%s\n", ctime(&ticks), ip_address_c, port_c);
+    printf("%.24s CLIENT: connected to %s:%li\n", ctime(&ticks), ip_address_c, port);
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
