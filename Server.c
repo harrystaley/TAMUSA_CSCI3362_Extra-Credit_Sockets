@@ -35,7 +35,7 @@ int main(int argc, char const *argv[])
     time_t ticks = time(NULL);
 
     if (argc != 1) {
-        fprintf(stderr,"ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80");
+        fprintf(stderr,"SERVER ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80\n");
         exit(1);
     } else {
         char_sock_addr = (char *) argv[1];

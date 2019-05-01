@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
 
     // checks to see if the user provided an argument to parse.
     if (argc != 1) {
-        fprintf(stderr,"CLIENT ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80\n");
+        fprintf(stderr,"CLIENT ERROR, Please provide your address in the following format: command ip_address:port\n ex: client 127.0.0.1:80\n");
         exit(1);
     } else {
        char_sock_addr = (char *) argv[1];
