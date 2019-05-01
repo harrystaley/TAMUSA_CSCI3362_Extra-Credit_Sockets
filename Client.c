@@ -32,7 +32,7 @@ int main(int argc, char const *argv[])
 
     // checks to see if the user provided an argument to parse.
     if (argc != 1) {
-        fprintf(stderr,"ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80");
+        fprintf(stderr,"CLIENT ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80\n");
         exit(1);
     } else {
        char_sock_addr = (char *) argv[1];
@@ -53,7 +53,7 @@ int main(int argc, char const *argv[])
      */
 
     if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-        printf("\n Socket creation error on client\n");
+        printf("CLIENT ERROR: Socket creation error on client\n");
         return -1;
     }// end if socket
 
@@ -77,17 +77,17 @@ int main(int argc, char const *argv[])
     if (port == 0 || port < 0 || port > 65535 ) {
         /* If a conversion error occurred, display a message and exit */
         if (errno == EINVAL) {
-            printf("Conversion error occurred: %d\n", errno);
+            printf("CLIENT ERROR: Conversion error occurred: %d\n", errno);
             exit(0);
         }// if errno == EINVAL
 
         /* If the value provided was out of range, display a warning message */
         if (errno == ERANGE) {
-            printf("The value provided was out of range\n");
+            printf("CLIENT ERROR: The value provided was out of range\n");
         } // end if errorno == ERANGE
         // check to see if the port is out of the range of acceptable ports.
         if (port < 0 || port > 65535) {
-            printf("The port number provided was out of range and must be between 0 and 65535\n");
+            printf("CLIENT ERROR: The port number provided was out of range and must be between 0 and 65535\n");
         }// if port < 0 || port > 65535
     }
     serverAddr.sin_port = htons(port);
@@ -102,7 +102,7 @@ int main(int argc, char const *argv[])
      */
 
     if (connect(socketFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
-        printf("\nConnection Failed\n");
+        printf("CLIENT ERROR: Connection Failed\n");
         return -1;
     }// end if connect
     printf("%.24s CLIENT: connected to %s:%s\n", ctime(&ticks), ip_address_c, port_c);

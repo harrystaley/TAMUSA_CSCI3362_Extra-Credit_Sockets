@@ -56,7 +56,7 @@ int main(int argc, char const *argv[])
 
     if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
-        perror("socket creation failed");
+        perror("SERVER ERROR: socket creation failed\n");
         exit(EXIT_FAILURE);
     }// end if socket
 
@@ -72,7 +72,7 @@ int main(int argc, char const *argv[])
 
     if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &optEnabled, sizeof(optEnabled)))
     {
-        perror("setsockopt failed");
+        perror("SERVER ERROR: setsockopt failed\n");
         exit(EXIT_FAILURE);
     }// end if setsockopt
 
@@ -80,7 +80,7 @@ int main(int argc, char const *argv[])
 
     // Convert IPv4 or IPv6 addresses from text to binary
     if(inet_pton(AF_INET, ip_address_c, &sockAddrIn.sin_addr)<=0) {
-        printf("\nInvalid address/ Address not supported\n");
+        printf("SERVER ERROR: Invalid address/ Address not supported\n");
         return -1;
     }// end if inet_ption
 
@@ -92,17 +92,17 @@ int main(int argc, char const *argv[])
     if (port == 0 || port < 0 || port > 65535 ) {
         /* If a conversion error occurred, display a message and exit */
         if (errno == EINVAL) {
-            printf("Conversion error occurred: %d\n", errno);
+            printf("SERVER ERROR: Conversion error occurred: %d\n", errno);
             exit(0);
         }// if errno == EINVAL
 
         /* If the value provided was out of range, display a warning message */
         if (errno == ERANGE) {
-            printf("The value provided was out of range\n");
+            printf("SERVER ERROR: The value provided was out of range\n");
         } // end if errorno == ERANGE
         // check to see if the port is out of the range of acceptable ports.
         if (port < 0 || port > 65535) {
-            printf("The port number provided was out of range and must be between 0 and 65535\n");
+            printf("SERVER ERROR: The port number provided was out of range and must be between 0 and 65535\n");
         }// if port < 0 || port > 65535
     }
     sockAddrIn.sin_port = htons(port);
@@ -118,7 +118,7 @@ int main(int argc, char const *argv[])
 
     if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0)
     {
-        perror("bind failed");
+        perror("SERVER ERROR: bind failed");
         exit(EXIT_FAILURE);
     }// end if bind
 
@@ -135,7 +135,7 @@ int main(int argc, char const *argv[])
 
     if (listen(socketFd, queLen) < 0)
     {
-        perror("listen failed");
+        perror("SERVER ERROR: listen failed");
         exit(EXIT_FAILURE);
     }// end if listen
     printf("\n%.24s SERVER: Listening on ip: %s port: %s\n", ctime(&ticks),ip_address_c, port_c);
@@ -150,7 +150,7 @@ int main(int argc, char const *argv[])
 
      if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0)
     {
-        perror("accept");
+        perror("SERVER ERROR: accept");
         exit(EXIT_FAILURE);
     }// end if connSocketFd
 
