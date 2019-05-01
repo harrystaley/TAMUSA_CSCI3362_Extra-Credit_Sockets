@@ -30,7 +30,6 @@ int main(int argc, char const *argv[])
     char buf[1024] = {0};
     time_t ticks = time(NULL);
 
-    printf("arguments: %s\n", argv[1]);
     // checks to see if the user provided an argument to parse.
     if (argc < 1) {
         fprintf(stderr,"CLIENT ERROR, Please provide your address in the following format: command ip_address:port\n ex: client 127.0.0.1:80\n");
@@ -38,8 +37,11 @@ int main(int argc, char const *argv[])
     } else {
        char_sock_addr = (char *) argv[1];
         const char delin[2] = ":";
-        ip_address_c = strtok(char_sock_addr, delin);
-        port_c = strtok(char_sock_addr, delin);
+        char* token;
+        token = strtok(char_sock_addr, delin);// parse ip address
+        ip_address_c = token;
+        token = strtok(NULL, delin);// parse port number.
+        port_c = token;
     }// end if argc != 1
 
     sleep(1); // Wait for one second before trying to connect to the server.

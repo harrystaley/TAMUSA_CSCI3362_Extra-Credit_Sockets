@@ -34,16 +34,17 @@ int main(int argc, char const *argv[])
     char *serverMsg;
     time_t ticks = time(NULL);
 
-    printf("arguments: %s\n", argv[1]);
-
     if (argc < 1) {
         fprintf(stderr,"SERVER ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80\n");
         exit(1);
     } else {
         char_sock_addr = (char *) argv[1];
         const char delin[2] = ":";
-        ip_address_c = strtok(char_sock_addr, delin);// converts the string ip address to an IPV4 address.
-        port_c = strtok(char_sock_addr, delin); // converts the string of our port to an integer.
+        char* token;
+        token = strtok(char_sock_addr, delin);// parse ip address
+        ip_address_c = token;
+        token = strtok(NULL, delin);// parse port number
+        port_c = token;
     }// end if argc != 1
 
     /*
