@@ -169,6 +169,6 @@ int main(int argc, char const *argv[])
     close(socketFd);
     sleep(1);
     close(connSocketFd);
-    
+
     return 0;
 }// end method main
