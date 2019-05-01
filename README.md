@@ -14,11 +14,8 @@
 'vagrant ssh'
 4. Navigate to the directory shared by your host OS located at /vagrant.
 'cd /vagrant'
-5. Install the Gnu C Compiler.
-'sudo apt-get update'
-'sudo apt-get install gcc'
 6. Run the provided shell script that will compile and run the client and server programs.
-'bash ./Run_Socket_Test.sh'
+'sudo bash ./Run_Socket_Test.sh'
 
 
 
