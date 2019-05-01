@@ -41,8 +41,8 @@ int main(int argc, char const *argv[])
         char_sock_addr = (char *) argv[1];
         char *token;
         const char delin[2] = ":";
-        ip_address_c = strtok(char_sock_addr, delin));// converts the string ip address to an IPV4 address.
-        port_c = strtok(char_sock_addr, delin)); // converts the string of our port to an integer.
+        ip_address_c = strtok(char_sock_addr, delin);// converts the string ip address to an IPV4 address.
+        port_c = strtok(char_sock_addr, delin); // converts the string of our port to an integer.
     }// end if argc != 1
 
     /*
