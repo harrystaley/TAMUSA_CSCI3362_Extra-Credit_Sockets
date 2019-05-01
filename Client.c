@@ -37,11 +37,8 @@ int main(int argc, char const *argv[])
     } else {
        char_sock_addr = (char *) argv[1];
         const char delin[2] = ":";
-        char* token;
-        token = strtok(char_sock_addr, delin);// parse ip address
-        ip_address_c = token;
-        token = strtok(NULL, delin);// parse port number.
-        port_c = token;
+        ip_address_c = strtok(char_sock_addr, delin);// parse ip address
+        port_c = strtok(NULL, delin);// parse port number.
     }// end if argc != 1
 
     sleep(1); // Wait for one second before trying to connect to the server.
@@ -61,7 +58,7 @@ int main(int argc, char const *argv[])
     }// end if socket
 
 
-    printf("CLIENT: socket created\n");
+    //printf("CLIENT: socket created\n");
 
     memset(&serverAddr, '0', sizeof(serverAddr));
 

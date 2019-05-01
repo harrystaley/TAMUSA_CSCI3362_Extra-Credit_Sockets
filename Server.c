@@ -40,11 +40,8 @@ int main(int argc, char const *argv[])
     } else {
         char_sock_addr = (char *) argv[1];
         const char delin[2] = ":";
-        char* token;
-        token = strtok(char_sock_addr, delin);// parse ip address
-        ip_address_c = token;
-        token = strtok(NULL, delin);// parse port number
-        port_c = token;
+        ip_address_c = strtok(char_sock_addr, delin);// parse ip address
+        port_c = strtok(NULL, delin);// parse port number
     }// end if argc != 1
 
     /*
