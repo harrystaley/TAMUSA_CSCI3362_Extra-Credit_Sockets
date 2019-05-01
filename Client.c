@@ -111,7 +111,7 @@ int main(int argc, char const *argv[])
 
     clientMsg = "Hello from client";
     send(socketFd , clientMsg , strlen(clientMsg) , 0 );
-    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks), ip_address_c, port_c);
+    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks));
 
     recv( socketFd , buf, 1024, 0);
     printf("%.24s CLIENT: %s\n", ctime(&ticks),buf );
