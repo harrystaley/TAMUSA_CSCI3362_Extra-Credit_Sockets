@@ -16,8 +16,8 @@
 #include <netinet/in.h>
 #include <string.h>
 #include <time.h>
-
-#define PORT 5000 // Defines the port that will be used.
+#include <arpa/inet.h>
+#include <errno.h>
 
 int main(int argc, char const *argv[])
 {
@@ -25,11 +25,25 @@ int main(int argc, char const *argv[])
     int socketFd; // server socket file descriptor
     int queLen = 3; // the number of connections slots in the listen que.
     int connSocketFd; // new socket file descriptor
+    char * char_sock_addr; // Defines the socket address that the user defined in teh argument.
+    char *ip_address_c; // Defines the IP Address for the local host
+    char *port_c; // Defines the port that will be used.
     int optEnabled = 1;
     int addressLen = sizeof(sockAddrIn);
     char buf[1024] = {0};
     char *serverMsg;
     time_t ticks = time(NULL);
+
+    if (argc != 1) {
+        fprintf(stderr,"ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80");
+        exit(1);
+    } else {
+        char_sock_addr = (char *) argv[1];
+        char *token;
+        const char delin[2] = ":";
+        ip_address_c = strtok(char_sock_addr, delin));// converts the string ip address to an IPV4 address.
+        port_c = strtok(char_sock_addr, delin)); // converts the string of our port to an integer.
+    }// end if argc != 1
 
     /*
      * CREATE SOCKET FILE DESCRIPTOR
@@ -63,8 +77,35 @@ int main(int argc, char const *argv[])
     }// end if setsockopt
 
     sockAddrIn.sin_family = AF_INET;
-    sockAddrIn.sin_addr.s_addr = INADDR_ANY;
-    sockAddrIn.sin_port = htons( PORT );
+
+    // Convert IPv4 or IPv6 addresses from text to binary
+    if(inet_pton(AF_INET, ip_address_c, &sockAddrIn.sin_addr)<=0) {
+        printf("\nInvalid address/ Address not supported\n");
+        return -1;
+    }// end if inet_ption
+
+    /* Convert the original port from string to long and check for errorrs in port range errors. */
+    char *eptr;
+    long port;
+    port = strtol(port_c, &eptr, 10);
+    /* If the result is 0, test for an error or if port is out of the range of acceptable ports. */
+    if (port == 0 || port < 0 || port > 65535 ) {
+        /* If a conversion error occurred, display a message and exit */
+        if (errno == EINVAL) {
+            printf("Conversion error occurred: %d\n", errno);
+            exit(0);
+        }// if errno == EINVAL
+
+        /* If the value provided was out of range, display a warning message */
+        if (errno == ERANGE) {
+            printf("The value provided was out of range\n");
+        } // end if errorno == ERANGE
+        // check to see if the port is out of the range of acceptable ports.
+        if (port < 0 || port > 65535) {
+            printf("The port number provided was out of range and must be between 0 and 65535\n");
+        }// if port < 0 || port > 65535
+    }
+    sockAddrIn.sin_port = htons( port );
 
     //printf("SERVER: Socket Options Set\n");
 

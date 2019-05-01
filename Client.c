@@ -17,17 +17,29 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <time.h>
-
-#define IP_ADDRESS "127.0.0.1" // Defines the IP Address for the local host
-#define PORT 5000 // Defines the port that will be used.
+#include <errno.h>
 
 int main(int argc, char const *argv[])
 {
+    char *ip_address_c; // Defines the IP Address for the local host
+    char  *port_c; // Defines the port that will be used.
+    char * char_sock_addr; // Defines the socket address that the user defined in teh argument.
     int socketFd = 0; // socket file descriptor
     struct sockaddr_in serverAddr;
     char *clientMsg;
     char buf[1024] = {0};
     time_t ticks = time(NULL);
+
+    // checks to see if the user provided an argument to parse.
+    if (argc != 1) {
+        fprintf(stderr,"ERROR, Please provide your address in the following format: command ip_address:port\n ex: server 127.0.0.1:80");
+        exit(1);
+    } else {
+       char_sock_addr = (char *) argv[1];
+        const char delin[2] = ":";
+        ip_address_c = strtok(char_sock_addr, delin);
+        port_c = strtok(char_sock_addr, delin);
+    }// end if argc != 1
 
     sleep(1); // Wait for one second before trying to connect to the server.
 
@@ -40,25 +52,45 @@ int main(int argc, char const *argv[])
      * 0 = Defines IP Protocol as it appears on protocol field in the IP header of a packet.
      */
 
-    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
-    {
+    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
         printf("\n Socket creation error on client\n");
         return -1;
     }// end if socket
 
-    //printf("CLIENT: socket created\n");
+
+    printf("CLIENT: socket created\n");
 
     memset(&serverAddr, '0', sizeof(serverAddr));
 
     serverAddr.sin_family = AF_INET;
-    serverAddr.sin_port = htons(PORT);
-
     // Convert IPv4 or IPv6 addresses from text to binary
-    if(inet_pton(AF_INET, IP_ADDRESS, &serverAddr.sin_addr)<=0)
-    {
+    if(inet_pton(AF_INET, ip_address_c, &serverAddr.sin_addr)<=0) {
         printf("\nInvalid address/ Address not supported\n");
         return -1;
     }// end if inet_ption
+
+    /* Convert the original port from string to long and check for errorrs in port range errors. */
+    char *eptr;
+    long port;
+    port = strtol(port_c, &eptr, 10);
+    /* If the result is 0, test for an error or if port is out of the range of acceptable ports. */
+    if (port == 0 || port < 0 || port > 65535 ) {
+        /* If a conversion error occurred, display a message and exit */
+        if (errno == EINVAL) {
+            printf("Conversion error occurred: %d\n", errno);
+            exit(0);
+        }// if errno == EINVAL
+
+        /* If the value provided was out of range, display a warning message */
+        if (errno == ERANGE) {
+            printf("The value provided was out of range\n");
+        } // end if errorno == ERANGE
+        // check to see if the port is out of the range of acceptable ports.
+        if (port < 0 || port > 65535) {
+            printf("The port number provided was out of range and must be between 0 and 65535\n");
+        }// if port < 0 || port > 65535
+    }
+    serverAddr.sin_port = htons(port);
 
     //printf("CLIENT: converted %s to binary.\n", IP_ADDRESS);
 
@@ -69,12 +101,11 @@ int main(int argc, char const *argv[])
      * specified by serverAddr where the server’s address and port is specified in serverAddr.
      */
 
-    if (connect(socketFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0)
-    {
+    if (connect(socketFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
         printf("\nConnection Failed\n");
         return -1;
     }// end if connect
-    printf("%.24s CLIENT: connected to %s:%i\n", ctime(&ticks), IP_ADDRESS, PORT);
+    printf("%.24s CLIENT: connected to %s:%i\n", ctime(&ticks), ip_address, port);
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
