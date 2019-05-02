@@ -156,7 +156,7 @@ int main(int argc, char const *argv[])
     // Keep listening and transmitting while the client is connected.
     while(1) {
         ssize_t r = recv(socketFd , buf, 1024, 0);
-        if (r == 0 || strcmp(buf, "EXIT") == 0) { // peer disconnected
+        if (strcmp(buf, "EXIT") == 0) { // peer disconnected
             printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else {
