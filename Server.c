@@ -147,52 +147,33 @@ int main(int argc, char const *argv[]) {
      if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0) {
         perror("SERVER ERROR: accept");
         exit(EXIT_FAILURE);
-    }// end if connSocketFd
-
-    //printf("SERVER: Connection Accepted\n");
+    } else {
+         printf("%.24s SERVER MESG: Connection accepted.\n", ctime(&ticks));
+     }
 
     // CONNECTION ESTABLISHED W. CLIENT!!!!!
     // Keep listening and transmitting while the client is connected.
     while(1) {
-        fd_set rfd, wfd;
-        FD_ZERO( &rfd);
-        FD_ZERO( &wfd);
 
-        FD_SET(socketFd, &rfd);
-        //FD_SET( sockfd, &wfd);
-        FD_SET( 0, &wfd);
-
-        if( FD_ISSET( socketFd, &rfd)) { // we got data ... need to read it
-            ssize_t r = recv(socketFd, buf, 1024, 0);
-            if (r == -1) {
-                printf("SERVER ERROR: Recv Error.");
-            }
-            if (strcmp(buf, "EXIT") == 0) { // peer disconnected
-                printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
-                break;
-            } else {
-                printf("%.24s SERVER RECV: %s\n", ctime(&ticks), buf);
-            }// end if r == 0
+         ssize_t r = recv(connSocketFd, buf, 1024, 0);
+        if (r == -1) {
+            printf("SERVER ERROR: Recv Error.");
         }
-        /*
-        else if (r == -1) { // error
-            printf("%.24s SERVER ERROR: Socket Read.\n", ctime(&ticks));
+        if (strcmp(buf, "EXIT") == 0) { // peer disconnected
+            printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else {
-            printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
+            printf("%.24s SERVER RECV: %s\n", ctime(&ticks), buf);
         }// end if r == 0
-         */
-        if( FD_ISSET( 0, &wfd)) {
-            printf(">>>>>>>>>>>: ");
-            fgets(serverMsg, sizeof(serverMsg), stdin);
-            printf("%.24s SERVER USRI: %s\n", ctime(&ticks), serverMsg);
-            ssize_t s = send(socketFd, serverMsg, strlen(serverMsg), 0);
-            if (s == -1){
-                printf("SERVER ERROR: Send Error.");
-            }
-
-            printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
+        printf(">>>>>>>>>>>: ");
+        fgets(serverMsg, sizeof(serverMsg), stdin);
+        printf("%.24s SERVER USRI: %s\n", ctime(&ticks), serverMsg);
+        ssize_t s = send(connSocketFd, serverMsg, strlen(serverMsg), 0);
+        if (s == -1){
+            printf("SERVER ERROR: Send Error.");
         }
+
+        printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
     }// end while true.
     printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
     sleep(1); // Wait before closing the file descriptors.
