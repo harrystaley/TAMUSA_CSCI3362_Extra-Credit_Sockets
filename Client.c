@@ -26,8 +26,8 @@ int main(int argc, char const *argv[])
     char * char_sock_addr; // Defines the socket address that the user defined in teh argument.
     int socketFd = 0; // socket file descriptor
     struct sockaddr_in serverAddr;
-    char buf[1024] = {0};
-    char clientMsg[500]= {0};
+    char recvBuf[1024] = {0};
+    char sendBuf[1024]= {0};
     time_t ticks = time(NULL);
 
     // checks to see if the user provided an argument to parse.
@@ -115,23 +115,25 @@ int main(int argc, char const *argv[])
     while(1) {
 
         printf(">>>>>>>>>>>: ");
-        fgets(clientMsg, sizeof(clientMsg), stdin);
-        ssize_t s = send(socketFd, clientMsg, strlen(clientMsg), 0);
+        fgets(sendBuf, sizeof(sendBuf), stdin);
+        ssize_t s = send(socketFd, sendBuf, sizeof(sendBuf), 0);
         if (s == -1){
             printf("CLIENT ERROR: Send Error.");
         } else {
-            printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), clientMsg);
+            printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), sendBuf);
+            memset(sendBuf,0,sizeof(sendBuf));
         }
 
-        ssize_t r = recv(socketFd, buf, 1024, 0);
+        ssize_t r = recv(socketFd, recvBuf, sizeof(recvBuf), 0);
         if (r == -1) {
             printf("CLIENT ERROR: Recv Error.");
         }
-        if (strcmp(buf, "EXIT") == 0) { // peer disconnected
+        if (strcmp(recvBuf, "EXIT") == 0) { // peer disconnected
             printf("%.24s CLIENT MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else {
-            printf("%.24s CLIENT RECV: %s\n", ctime(&ticks), buf);
+            printf("%.24s CLIENT RECV: %s\n", ctime(&ticks), recvBuf);
+            memset(recvBuf,0,sizeof(recvBuf));
         }// end if r == 0
     }// end while true.
     printf("%.24s CLIENT MESG: Please wait chat client closing.\n", ctime(&ticks));
