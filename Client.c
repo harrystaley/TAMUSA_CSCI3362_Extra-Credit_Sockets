@@ -111,11 +111,14 @@ int main(int argc, char const *argv[])
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
-    while(strcmp(clientMsg, "END") != 0) {
+    while(1) {
         printf(">>>>>>>>>>>: ");
         fgets(clientMsg, sizeof(clientMsg), stdin);
         send(socketFd, clientMsg, strlen(clientMsg), 0);
         printf("%.24s CLIENT SENT: %s", ctime(&ticks), clientMsg);
+        if (strcmp(clientMsg, "END") == 0){
+            break;
+        }
         recv( socketFd , buf, 1024, 0);
         printf("%.24s CLIENT RECV: %s\n", ctime(&ticks),buf );
     }// end while loop
