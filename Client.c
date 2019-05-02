@@ -114,6 +114,15 @@ int main(int argc, char const *argv[])
 
     while(1) {
 
+        printf(">>>>>>>>>>>: ");
+        fgets(clientMsg, sizeof(clientMsg), stdin);
+        ssize_t s = send(socketFd, clientMsg, strlen(clientMsg), 0);
+        if (s == -1){
+            printf("CLIENT ERROR: Send Error.");
+        } else {
+            printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), clientMsg);
+        }
+
         ssize_t r = recv(socketFd, buf, 1024, 0);
         if (r == -1) {
             printf("CLIENT ERROR: Recv Error.");
@@ -124,15 +133,6 @@ int main(int argc, char const *argv[])
         } else {
             printf("%.24s CLIENT RECV: %s\n", ctime(&ticks), buf);
         }// end if r == 0
-        printf(">>>>>>>>>>>: ");
-        fgets(clientMsg, sizeof(clientMsg), stdin);
-        printf("%.24s CLIENT USRI: %s\n", ctime(&ticks), clientMsg);
-        ssize_t s = send(socketFd, clientMsg, strlen(clientMsg), 0);
-        if (s == -1){
-            printf("CLIENT ERROR: Send Error.");
-        }
-
-        printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), clientMsg);
     }// end while true.
     printf("%.24s CLIENT MESG: Please wait chat client closing.\n", ctime(&ticks));
     sleep(2); // Wait before closing the file descriptor.
