@@ -30,7 +30,7 @@ int main(int argc, char const *argv[]) {
     int optEnabled = 1;
     int addressLen = sizeof(sockAddrIn);
     char buf[1024] = {0};
-    char serverMsg[500];
+    char serverMsg[500] = {0};
     time_t ticks = time(NULL);
 
     if (argc < 1) {
@@ -154,31 +154,28 @@ int main(int argc, char const *argv[]) {
     // CONNECTION ESTABLISHED W. CLIENT!!!!!
     // Keep listening and transmitting while the client is connected.
     while(1) {
-
+        // Receve data from the client.
          ssize_t r = recv(connSocketFd, buf, 1024, 0);
-        if (r == -1) {
-            printf("SERVER ERROR: Recv Error.");
-        }
-        if (strcmp(buf, "EXIT") == 0) { // peer disconnected
+        if (r == 0){
             printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
+        } else if (r == -1) {
+            printf("SERVER ERROR: Recv Error.");
         } else {
             printf("%.24s SERVER RECV: %s\n", ctime(&ticks), buf);
         }// end if r == 0
+
+        // send data to the client.
         printf(">>>>>>>>>>>: ");
         fgets(serverMsg, sizeof(serverMsg), stdin);
-        printf("%.24s SERVER USRI: %s\n", ctime(&ticks), serverMsg);
+        printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
         ssize_t s = send(connSocketFd, serverMsg, strlen(serverMsg), 0);
         if (s == -1){
             printf("SERVER ERROR: Send Error.");
-        }
-
-        printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
+        }// if s == -1
     }// end while true.
     printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
-    sleep(1); // Wait before closing the file descriptors.
     close(socketFd); // close the socket.
-    sleep(1);
     close(connSocketFd); // Close the connection socket.
 
     return 0;

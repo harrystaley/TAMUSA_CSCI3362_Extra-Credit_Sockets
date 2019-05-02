@@ -27,7 +27,7 @@ int main(int argc, char const *argv[])
     int socketFd = 0; // socket file descriptor
     struct sockaddr_in serverAddr;
     char buf[1024] = {0};
-    char clientMsg[500];
+    char clientMsg[500]= {0};
     time_t ticks = time(NULL);
 
     // checks to see if the user provided an argument to parse.
