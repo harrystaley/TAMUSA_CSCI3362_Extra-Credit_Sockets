@@ -113,7 +113,7 @@ int main(int argc, char const *argv[])
 
     while(strcmp(clientMsg, "END") != 0) {
         printf(">>>>>>>>>>>: ");
-        fgets(clientMsg, 100, stdin);
+        fgets(clientMsg, sizeof(clientMsg), stdin);
         send(socketFd, clientMsg, strlen(clientMsg), 0);
         printf("%.24s CLIENT SENT: %s", ctime(&ticks), clientMsg);
         recv( socketFd , buf, 1024, 0);

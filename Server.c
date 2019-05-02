@@ -159,14 +159,19 @@ int main(int argc, char const *argv[])
         if (r == 0 || strcmp(buf, "EXIT") == 0) { // peer disconnected
             printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
-        } else if (r == -1) { // error
+        } else {
+            printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
+        }// end if r == 0
+        /*
+        else if (r == -1) { // error
             printf("%.24s SERVER ERROR: Socket Read.\n", ctime(&ticks));
             break;
         } else {
             printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
         }// end if r == 0
+         */
         printf(">>>>>>>>>>>: ");
-        fgets(serverMsg, 100, stdin);
+        fgets(serverMsg, sizeof(serverMsg), stdin);
         send(socketFd, serverMsg, strlen(serverMsg), 0);
         printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
     }// end while true.
