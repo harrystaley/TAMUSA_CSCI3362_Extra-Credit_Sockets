@@ -116,7 +116,7 @@ int main(int argc, char const *argv[])
      */
 
     if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0) {
-        perror("SERVER ERROR: bind failed");
+        perror("SERVER ERROR: bind failed\n");
         exit(EXIT_FAILURE);
     }// end if bind
 
@@ -132,7 +132,7 @@ int main(int argc, char const *argv[])
      */
 
     if (listen(socketFd, queLen) < 0) {
-        perror("SERVER ERROR: listen failed");
+        perror("SERVER ERROR: listen failed\n");
         exit(EXIT_FAILURE);
     }// end if listen
     printf("\n%.24s SERVER MESG: Listening on %s:%li\n", ctime(&ticks),ip_address_c, port);
@@ -157,10 +157,10 @@ int main(int argc, char const *argv[])
     while(1) {
         ssize_t r = recv(socketFd , buf, 1024, 0);
         if (r == 0 || strcmp(buf, "EXIT") == 0) { // peer disconnected
-            printf("%.24s SERVER MESG: Client disconnected.", ctime(&ticks));
+            printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else if (r == -1) { // error
-            printf("%.24s SERVER ERROR: Socket Read.", ctime(&ticks));
+            printf("%.24s SERVER ERROR: Socket Read.\n", ctime(&ticks));
             break;
         } else {
             printf("%.24s SERVER RECV: %s\n", ctime(&ticks),buf );
@@ -168,7 +168,7 @@ int main(int argc, char const *argv[])
         printf(">>>>>>>>>>>: ");
         fgets(serverMsg, 100, stdin);
         send(socketFd, serverMsg, strlen(serverMsg), 0);
-        printf("%.24s SERVER SENT: %s", ctime(&ticks), serverMsg);
+        printf("%.24s SERVER SENT: %s\n", ctime(&ticks), serverMsg);
     }// end while true.
 
     printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
