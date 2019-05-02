@@ -19,8 +19,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 
-int main(int argc, char const *argv[])
-{
+int main(int argc, char const *argv[]) {
     struct sockaddr_in sockAddrIn;
     int socketFd; // server socket file descriptor
     int queLen = 3; // the number of connections slots in the listen que.
@@ -30,8 +29,8 @@ int main(int argc, char const *argv[])
     char *port_c; // Defines the port that will be used.
     int optEnabled = 1;
     int addressLen = sizeof(sockAddrIn);
-    char buf[1024] = {0};
-    char *serverMsg;
+    char recvBuf[1024] = {0};
+    char sendBuf[1024] = {0};
     time_t ticks = time(NULL);
 
     if (argc < 1) {
@@ -53,8 +52,7 @@ int main(int argc, char const *argv[])
      * 0 = Defines IP Protocol as it appears on protocol field in the IP header of a packet.
      */
 
-    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
+    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("SERVER ERROR: socket creation failed\n");
         exit(EXIT_FAILURE);
     }// end if socket
@@ -69,8 +67,7 @@ int main(int argc, char const *argv[])
      * but it helps in reuse of address and port. Prevents error such as: “address already in use”.
      */
 
-    if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &optEnabled, sizeof(optEnabled)))
-    {
+    if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &optEnabled, sizeof(optEnabled))) {
         perror("SERVER ERROR: setsockopt failed\n");
         exit(EXIT_FAILURE);
     }// end if setsockopt
@@ -117,9 +114,8 @@ int main(int argc, char const *argv[])
      * server is bound to localhost which is why we use INADDR_ANY to refer to the IP address.
      */
 
-    if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0)
-    {
-        perror("SERVER ERROR: bind failed");
+    if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0) {
+        perror("SERVER ERROR: bind failed\n");
         exit(EXIT_FAILURE);
     }// end if bind
 
@@ -134,12 +130,11 @@ int main(int argc, char const *argv[])
      * indication of ECONNREFUSED.
      */
 
-    if (listen(socketFd, queLen) < 0)
-    {
-        perror("SERVER ERROR: listen failed");
+    if (listen(socketFd, queLen) < 0) {
+        perror("SERVER ERROR: listen failed\n");
         exit(EXIT_FAILURE);
     }// end if listen
-    printf("\n%.24s SERVER: Listening on ip: %s port: %li\n", ctime(&ticks),ip_address_c, port);
+    printf("\n%.24s SERVER MESG: Listening on %s:%li\n", ctime(&ticks),ip_address_c, port);
 
 
     /*
@@ -149,27 +144,42 @@ int main(int argc, char const *argv[])
      * Then creates a new connected socket, and returns a new file descriptor referring to that socket.
     */
 
-     if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0)
-    {
-        perror("SERVER ERROR: accept");
+     if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0) {
+        perror("SERVER ERROR: accept.\n");
         exit(EXIT_FAILURE);
-    }// end if connSocketFd
-
-    //printf("SERVER: Connection Accepted\n");
+    } else {
+         printf("%.24s SERVER MESG: Connection accepted.\n", ctime(&ticks));
+     }
 
     // CONNECTION ESTABLISHED W. CLIENT!!!!!
+    // Keep listening and transmitting while the client is connected.
+    while(1) {
+        // Receve data from the client.
+         ssize_t r = recv(connSocketFd, recvBuf, sizeof(recvBuf), 0);
+        if (r == 0|| strcmp(recvBuf, "EXIT\n")==0){
+            printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
+            break;
+        } else if (r == -1) {
+            printf("SERVER ERROR: Recv Error.\n");
+        } else {
+            printf("%.24s SERVER RECV: %s", ctime(&ticks), recvBuf);
+            memset(recvBuf,0,sizeof(recvBuf));
+        }// end if r == 0
 
-    recv( connSocketFd , buf, 1024, 0);
-    printf("%.24s SERVER: %s\n", ctime(&ticks),buf );
+        // send data to the client.
+        printf(">>>>>>>>>>>: ");
+        fgets(sendBuf, sizeof(sendBuf), stdin);
+        ssize_t s = send(connSocketFd, sendBuf, strlen(sendBuf), 0);
+        if (s == -1){
+            printf("SERVER ERROR: Send Error.\n");
+        } else {
+            printf("%.24s SERVER SENT: %s", ctime(&ticks), sendBuf);
+            memset(sendBuf,0,sizeof(sendBuf));
+        }
 
-    serverMsg = "Hello from server";
-    send(connSocketFd , serverMsg , strlen(serverMsg) , 0 );
-    printf("%.24s SERVER: Hello message sent\n", ctime(&ticks));
-
-    sleep(1); // Wait before closing the file descriptors.
-    close(socketFd);
-    sleep(1);
-    close(connSocketFd);
+    }// end while true.
+    close(socketFd); // close the socket.
+    close(connSocketFd); // Close the connection socket.
 
     return 0;
 }// end method main

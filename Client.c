@@ -26,8 +26,8 @@ int main(int argc, char const *argv[])
     char * char_sock_addr; // Defines the socket address that the user defined in teh argument.
     int socketFd = 0; // socket file descriptor
     struct sockaddr_in serverAddr;
-    char *clientMsg;
-    char buf[1024] = {0};
+    char recvBuf[1024] = {0};
+    char sendBuf[1024]= {0};
     time_t ticks = time(NULL);
 
     // checks to see if the user provided an argument to parse.
@@ -106,19 +106,36 @@ int main(int argc, char const *argv[])
     if (connect(socketFd, (struct sockaddr *)&serverAddr, sizeof(serverAddr)) < 0) {
         printf("CLIENT ERROR: Connection Failed\n");
         return -1;
-    }// end if connect
-    printf("%.24s CLIENT: connected to %s:%li\n", ctime(&ticks), ip_address_c, port);
+    }else {
+        printf("%.24s CLIENT MESG: connected to %s:%li\n", ctime(&ticks), ip_address_c, port);
+    }
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
-    clientMsg = "Hello from client";
-    send(socketFd , clientMsg , strlen(clientMsg) , 0 );
-    printf("%.24s CLIENT: Hello message sent\n", ctime(&ticks));
+    while(1) {
 
-    recv( socketFd , buf, 1024, 0);
-    printf("%.24s CLIENT: %s\n", ctime(&ticks),buf );
+        printf(">>>>>>>>>>>: ");
+        fgets(sendBuf, sizeof(sendBuf), stdin);
+        ssize_t s = send(socketFd, sendBuf, sizeof(sendBuf), 0);
+        if (s == -1){
+            printf("CLIENT ERROR: Send Error.");
+        } else {
+            printf("%.24s CLIENT SENT: %s", ctime(&ticks), sendBuf);
+            memset(sendBuf,0,sizeof(sendBuf));
+        }
 
-    sleep(2); // Wait before closing the file descriptor.
+        ssize_t r = recv(socketFd, recvBuf, sizeof(recvBuf), 0);
+        if (r == -1) {
+            printf("CLIENT ERROR: Recv Error.");
+        }
+        if (strcmp(recvBuf, "EXIT\n") == 0) { // peer disconnected
+            printf("%.24s CLIENT MESG: Server disconnected.\n", ctime(&ticks));
+            break;
+        } else {
+            printf("%.24s CLIENT RECV: %s", ctime(&ticks), recvBuf);
+            memset(recvBuf,0,sizeof(recvBuf));
+        }// end if r == 0
+    }// end while true.
     close(socketFd);
 
     return 0;
