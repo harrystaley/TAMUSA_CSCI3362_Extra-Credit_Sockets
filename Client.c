@@ -111,7 +111,7 @@ int main(int argc, char const *argv[])
 
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
-    while(strcmp(clientMsg, "END") != 0 && strcmp(buf, "END") != 0) {        char *clientMsg = NULL;
+    while(strcmp(clientMsg, "END") != 0) {
         printf(">>>>>>>>>>>: ");
         fgets(clientMsg, 100, stdin);
         send(socketFd, clientMsg, strlen(clientMsg), 0);

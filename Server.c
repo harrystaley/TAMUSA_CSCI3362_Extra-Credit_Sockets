@@ -53,8 +53,7 @@ int main(int argc, char const *argv[])
      * 0 = Defines IP Protocol as it appears on protocol field in the IP header of a packet.
      */
 
-    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
-    {
+    if ((socketFd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
         perror("SERVER ERROR: socket creation failed\n");
         exit(EXIT_FAILURE);
     }// end if socket
@@ -69,8 +68,7 @@ int main(int argc, char const *argv[])
      * but it helps in reuse of address and port. Prevents error such as: “address already in use”.
      */
 
-    if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &optEnabled, sizeof(optEnabled)))
-    {
+    if (setsockopt(socketFd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &optEnabled, sizeof(optEnabled))) {
         perror("SERVER ERROR: setsockopt failed\n");
         exit(EXIT_FAILURE);
     }// end if setsockopt
@@ -117,8 +115,7 @@ int main(int argc, char const *argv[])
      * server is bound to localhost which is why we use INADDR_ANY to refer to the IP address.
      */
 
-    if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0)
-    {
+    if (bind(socketFd, (struct sockaddr *)&sockAddrIn, sizeof(sockAddrIn))<0) {
         perror("SERVER ERROR: bind failed");
         exit(EXIT_FAILURE);
     }// end if bind
@@ -134,12 +131,11 @@ int main(int argc, char const *argv[])
      * indication of ECONNREFUSED.
      */
 
-    if (listen(socketFd, queLen) < 0)
-    {
+    if (listen(socketFd, queLen) < 0) {
         perror("SERVER ERROR: listen failed");
         exit(EXIT_FAILURE);
     }// end if listen
-    printf("\n%.24s SERVER: Listening on ip: %s port: %li\n", ctime(&ticks),ip_address_c, port);
+    printf("\n%.24s SERVER MESG: Listening on %s:%li\n", ctime(&ticks),ip_address_c, port);
 
 
     /*
