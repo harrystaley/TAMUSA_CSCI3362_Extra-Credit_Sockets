@@ -128,7 +128,7 @@ int main(int argc, char const *argv[])
         if (r == -1) {
             printf("CLIENT ERROR: Recv Error.");
         }
-        if (strcmp(recvBuf, "EXIT") == 0) { // peer disconnected
+        if (strcmp(recvBuf, "EXIT\0") == 0) { // peer disconnected
             printf("%.24s CLIENT MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else {

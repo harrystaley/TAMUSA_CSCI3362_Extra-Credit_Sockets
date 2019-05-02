@@ -156,7 +156,7 @@ int main(int argc, char const *argv[]) {
     while(1) {
         // Receve data from the client.
          ssize_t r = recv(connSocketFd, recvBuf, sizeof(recvBuf), 0);
-        if (r == 0){
+        if (r == 0|| strcmp(recvBuf, "EXIT\0") == 0){
             printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else if (r == -1) {
