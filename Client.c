@@ -112,15 +112,38 @@ int main(int argc, char const *argv[])
     // CONNECTION ESTABLISHED W. SERVER!!!!!
 
     while(1) {
-        printf(">>>>>>>>>>>: ");
-        fgets(clientMsg, sizeof(clientMsg), stdin);
-        send(socketFd, clientMsg, strlen(clientMsg), 0);
-        printf("%.24s CLIENT SENT: %s", ctime(&ticks), clientMsg);
-        if (strcmp(clientMsg, "END") == 0){
-            break;
+        fd_set rfd, wfd;
+        FD_ZERO( &rfd);
+        FD_ZERO( &wfd);
+
+        FD_SET(socketFd, &rfd);
+        //FD_SET( sockfd, &wfd);
+        FD_SET( 0, &wfd);
+
+        if( FD_ISSET( socketFd, &rfd)) { // we got data ... need to read it
+            ssize_t r = recv(socketFd, buf, 1024, 0);
+            if (r == -1) {
+                printf("CLIENT ERROR: Recv Error.");
+            }
+            if (strcmp(buf, "EXIT") == 0) { // peer disconnected
+                printf("%.24s CLIENT MESG: Client disconnected.\n", ctime(&ticks));
+                break;
+            } else {
+                printf("%.24s CLIENT RECV: %s\n", ctime(&ticks), buf);
+            }// end if r == 0
         }
-        recv( socketFd , buf, 1024, 0);
-        printf("%.24s CLIENT RECV: %s\n", ctime(&ticks),buf );
+       
+        if( FD_ISSET( 0, &wfd)) {
+            printf(">>>>>>>>>>>: ");
+            fgets(clientMsg, sizeof(clientMsg), stdin);
+            printf("%.24s CLIENT USRI: %s\n", ctime(&ticks), clientMsg);
+            ssize_t s = send(socketFd, clientMsg, strlen(clientMsg), 0);
+            if (s == -1){
+                printf("CLIENT ERROR: Send Error.");
+            }
+
+            printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), clientMsg);
+        }
     }// end while loop
 
     printf("%.24s CLIENT MESG: Please wait chat client closing.\n", ctime(&ticks));
