@@ -120,7 +120,7 @@ int main(int argc, char const *argv[])
         if (s == -1){
             printf("CLIENT ERROR: Send Error.");
         } else {
-            printf("%.24s CLIENT SENT: %s\n", ctime(&ticks), sendBuf);
+            printf("%.24s CLIENT SENT: %s", ctime(&ticks), sendBuf);
             memset(sendBuf,0,sizeof(sendBuf));
         }
 
@@ -128,16 +128,14 @@ int main(int argc, char const *argv[])
         if (r == -1) {
             printf("CLIENT ERROR: Recv Error.");
         }
-        if (strcmp(recvBuf, "EXIT\0") == 0) { // peer disconnected
-            printf("%.24s CLIENT MESG: Client disconnected.\n", ctime(&ticks));
+        if (strcmp(recvBuf, "EXIT\n") == 0) { // peer disconnected
+            printf("%.24s CLIENT MESG: Server disconnected.\n", ctime(&ticks));
             break;
         } else {
-            printf("%.24s CLIENT RECV: %s\n", ctime(&ticks), recvBuf);
+            printf("%.24s CLIENT RECV: %s", ctime(&ticks), recvBuf);
             memset(recvBuf,0,sizeof(recvBuf));
         }// end if r == 0
     }// end while true.
-    printf("%.24s CLIENT MESG: Please wait chat client closing.\n", ctime(&ticks));
-    sleep(2); // Wait before closing the file descriptor.
     close(socketFd);
 
     return 0;

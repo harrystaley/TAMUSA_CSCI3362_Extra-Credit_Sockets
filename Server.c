@@ -145,7 +145,7 @@ int main(int argc, char const *argv[]) {
     */
 
      if ((connSocketFd = accept(socketFd, (struct sockaddr *)&sockAddrIn, (socklen_t*)&addressLen))<0) {
-        perror("SERVER ERROR: accept");
+        perror("SERVER ERROR: accept.\n");
         exit(EXIT_FAILURE);
     } else {
          printf("%.24s SERVER MESG: Connection accepted.\n", ctime(&ticks));
@@ -156,13 +156,13 @@ int main(int argc, char const *argv[]) {
     while(1) {
         // Receve data from the client.
          ssize_t r = recv(connSocketFd, recvBuf, sizeof(recvBuf), 0);
-        if (r == 0|| strcmp(recvBuf, "EXIT\0") == 0){
+        if (r == 0|| strcmp(recvBuf, "EXIT\n")==0){
             printf("%.24s SERVER MESG: Client disconnected.\n", ctime(&ticks));
             break;
         } else if (r == -1) {
-            printf("SERVER ERROR: Recv Error.");
+            printf("SERVER ERROR: Recv Error.\n");
         } else {
-            printf("%.24s SERVER RECV: %s\n", ctime(&ticks), recvBuf);
+            printf("%.24s SERVER RECV: %s", ctime(&ticks), recvBuf);
             memset(recvBuf,0,sizeof(recvBuf));
         }// end if r == 0
 
@@ -171,14 +171,13 @@ int main(int argc, char const *argv[]) {
         fgets(sendBuf, sizeof(sendBuf), stdin);
         ssize_t s = send(connSocketFd, sendBuf, strlen(sendBuf), 0);
         if (s == -1){
-            printf("SERVER ERROR: Send Error.");
+            printf("SERVER ERROR: Send Error.\n");
         } else {
-            printf("%.24s SERVER SENT: %s\n", ctime(&ticks), sendBuf);
+            printf("%.24s SERVER SENT: %s", ctime(&ticks), sendBuf);
             memset(sendBuf,0,sizeof(sendBuf));
         }
 
     }// end while true.
-    printf("%.24s SERVER MESG: Please wait chat client closing.\n", ctime(&ticks));
     close(socketFd); // close the socket.
     close(connSocketFd); // Close the connection socket.
 
