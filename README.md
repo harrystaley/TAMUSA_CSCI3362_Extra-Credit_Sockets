@@ -1,65 +1,80 @@
 # TAMUSA_CSCI3362_Extra-Credit_Sockets
 
 ## Project Overview
+This repository is designed for educational purposes to demonstrate the use of sockets within a virtualized environment. It includes simple server and client applications that communicate over sockets, showcasing basic network interactions. The project utilizes Vagrant and VirtualBox to create a consistent and controlled virtual environment where these applications can be run and tested.
 
-This repository is designed to provide a simple, yet effective, example of using sockets in a virtualized environment. It is a part of an extra credit assignment for the CSCI3362 course at Texas A&M University-San Antonio. The project makes use of Vagrant and VirtualBox to set up the environment and includes instructions for compiling and running both server and client applications to demonstrate socket communication.
+### Project Structure
+```
+TAMUSA_CSCI3362_Extra-Credit_Sockets/
+│
+├── Vagrantfile           # Configuration file for Vagrant to setup the virtual environment
+├── server                # Directory containing the server application
+│   └── server.c          # Server application source code
+│
+├── client                # Directory containing the client application
+│   └── client.c          # Client application source code
+│
+└── README.md             # Documentation for the project
+```
 
 ## Setup and Installation
 
-Before getting started, you will need to have the following dependencies installed on your machine:
+### Dependencies
+- **VirtualBox**: This project uses VirtualBox as the provider for the virtual machines. Download and install it from [VirtualBox.org](https://www.virtualbox.org/).
+- **Vagrant**: Vagrant is used to manage the virtual environment. Install it from [Vagrantup.com](https://www.vagrantup.com/downloads).
 
-- [Vagrant](https://www.vagrantup.com/)
-- [VirtualBox](https://www.virtualbox.org/)
+### Installation Steps
+1. **Clone the Repository**
+   ```bash
+   git clone https://github.com/your-username/TAMUSA_CSCI3362_Extra-Credit_Sockets.git
+   cd TAMUSA_CSCI3362_Extra-Credit_Sockets
+   ```
 
-Once these dependencies are installed, you can clone this repository to your local machine. Navigate to the directory where you want to clone the repository and run the following command:
+2. **Start the Virtual Environment**
+   ```bash
+   vagrant up
+   ```
 
-```bash
-git clone https://github.com/username/TAMUSA_CSCI3362_Extra-Credit_Sockets.git
-```
+3. **SSH into the Virtual Machine**
+   ```bash
+   vagrant ssh
+   ```
 
-Navigate to the cloned repository and start the Vagrant environment:
+4. **Compile the Applications**
+   Navigate to the synced folder in the VM, then compile the server and client applications:
+   ```bash
+   cd /vagrant/server
+   gcc server.c -o server
+   cd ../client
+   gcc client.c -o client
+   ```
 
-```bash
-cd TAMUSA_CSCI3362_Extra-Credit_Sockets
-vagrant up
-```
+## Usage Examples
 
-This will set up a virtualized environment for you to work with.
-
-## Usage
-
-Once your Vagrant environment is up and running, you can compile and run the server and client applications. 
-
-To compile the server application, navigate to the server directory and run the make command:
-
-```bash
-cd server
-make
-```
-
-To run the server application:
-
+### Running the Server
+From the server directory in the virtual machine:
 ```bash
 ./server
 ```
 
-Similarly, to compile the client application, navigate to the client directory and run the make command:
-
-```bash
-cd client
-make
-```
-
-To run the client application:
-
+### Running the Client
+From the client directory in the virtual machine (ensure the server is running first):
 ```bash
 ./client
 ```
 
 ## Contributing
 
-We welcome contributions from anyone. Before contributing, please read through our [contributing guidelines](CONTRIBUTING.md).
+Contributions to this project are welcome! Here's how you can contribute:
+1. **Fork the Repository**: Click the 'Fork' button at the top right of this page.
+2. **Clone Your Fork**: `git clone https://github.com/your-username/TAMUSA_CSCI3362_Extra-Credit_Sockets.git`
+3. **Create a New Branch**: `git checkout -b your-branch-name`
+4. **Make Your Changes**: Enhance the code or documentation and commit your changes.
+5. **Push Your Changes**: `git push origin your-branch-name`
+6. **Submit a Pull Request**: Open a pull request from your forked repository to the original repository.
+
+Please ensure your code adheres to the existing style of the project to maintain consistency.
 
 ## License
 
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for more details.
+This project is available under the MIT License. See the LICENSE file for more details.
